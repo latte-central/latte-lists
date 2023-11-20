@@ -3,13 +3,13 @@
 
   (:refer-clojure :exclude [list cons and or not int =])
 
-  (:require [latte.core :as latte :refer [defaxiom defthm definition
+  (:require [latte.core :as latte :refer [defaxiom defthm definition try-definition
                                           lambda forall pose
                                           proof try-proof assume have qed]]
 
             [latte.utils :as u :refer [decomposer]]
 
-            [latte-prelude.prop :as p :refer [not or]]
+            [latte-prelude.prop :as p :refer [not or and]]
             [latte-prelude.equal :as eq :refer [equal]]
             [latte-prelude.quant :as q :refer [exists]]
             [latte-prelude.fun :as fun]
@@ -130,4 +130,15 @@ with head `e` and tail `l`"
          (forall [l (list T)]
            (forall [e T]
              (equal (g (cons e l)) (f (g l))))))))
+
+(defaxiom list-recur
+  "The recursion principle for inductive lists, cf. [[list-recur-prop]].
+
+Remark: this is for now defined as an axiom, but it is provable
+ (and shall we proved in the future)"
+  [[T U :type] [x U] [f (==> U U)]]
+  (q/unique (list-recur-prop T U x f)))
+
+
+
 
