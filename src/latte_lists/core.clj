@@ -124,21 +124,18 @@ with head `e` and tail `l`"
 
 (definition list-recur-prop
   "The property of the recursion principle for inductive lists"
-  [[T U :type] [x U] [f (==> U U)]]
+  [[T U :type] [x U] [f (==> T U U)]]
   (lambda [g (==> (list T) U)]
     (and (equal (g (null T)) x)
-         (forall [l (list T)]
-           (forall [e T]
-             (equal (g (cons e l)) (f (g l))))))))
+         (forall [ys (list T)]
+           (forall [y T]
+             (equal (g (cons y ys)) (f y (g ys))))))))
 
 (defaxiom list-recur
   "The recursion principle for inductive lists, cf. [[list-recur-prop]].
 
 Remark: this is for now defined as an axiom, but it is provable
  (and shall we proved in the future)"
-  [[T U :type] [x U] [f (==> U U)]]
+  [[T U :type] [x U] [f (==> T U U)]]
   (q/unique (list-recur-prop T U x f)))
-
-
-
 
