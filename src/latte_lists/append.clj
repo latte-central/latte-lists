@@ -12,6 +12,7 @@
             [latte-prelude.prop :as p :refer [not or and]]
             [latte-prelude.equal :as eq :refer [equal]]
             [latte-prelude.quant :as q :refer [exists]]
+            [latte-prelude.algebra :as alg]
 
             [latte-lists.core :as lists :refer [list null cons]]
             )
@@ -162,9 +163,43 @@
   (qed ((lists/list-induct P) <a> <b> xs)))
 
 
+;;; monoid properties
 
+(defthm append-associative
+  [T :type]
+  (alg/associative (append-def T)))
 
+(proof 'append-associative
+  (assume [xs (list T) ys (list T) zs (list T)]
+    (have <a> _ :by (eq/eq-sym (append-assoc xs ys zs))))
+  (qed <a>))
 
+(defthm append-id-left
+  [T :type]
+  (alg/identity-left (append-def T) (null T)))
+
+(proof 'append-id-left
+  (assume [xs (list T)]
+    (have <a> _ :by (append-null-left xs)))
+  (qed <a>))
+
+(defthm append-id-right
+  [T :type]
+  (alg/identity-right (append-def T) (null T)))
+
+(proof 'append-id-right
+  (assume [xs (list T)]
+    (have <a> _ :by (append-null-right xs)))
+  (qed <a>))
+
+(defthm append-monoid
+  [T :type]
+  (alg/monoid (append-def T) (null T)))
+
+(proof 'append-monoid
+  (qed (p/and-intro* (append-associative T)
+                     (append-id-left T)
+                     (append-id-right T))))
 
 
 
