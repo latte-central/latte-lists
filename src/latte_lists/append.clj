@@ -76,18 +76,16 @@
   
   "By structural induction"
 
-  "case (null T)"
+  "Base case"
   (have <a> (P (null T))
         :by (append-null-left (null T)))
 
-  "inductive case"
-
+  "Inductive case"
   (assume [xs (list T)
            Hind (P xs)
            x T]
     "Now we have to prove (P (cons x xs))"
     
-
     (have <b1> (equal (cons x (append xs (null T)))
                       (cons x xs))
           :by (eq/eq-cong (lambda [$ (list T)] (cons x $)) Hind))
@@ -101,7 +99,67 @@
   "Use the induction principle"
   (qed ((lists/list-induct P) <a> <b> xs)))
 
+(defthm append-assoc
+  [[?T :type] [xs ys zs (list T)]]
+  (equal (append (append xs ys) zs)
+         (append xs (append ys zs))))
 
+(proof 'append-assoc-thm
+  (pose P := (lambda [$ (list T)]
+               (equal (append (append $ ys) zs)
+                      (append $ (append ys zs)))))
+
+  "By induction"
+  "Base case"
+
+  (have <a1> (equal (append (null T) ys)
+                    ys)
+        :by (append-null-left ys))
+
+  (have <a2> (equal (append (append (null T) ys) zs)
+                    (append ys zs))
+        :by (eq/eq-cong (lambda [$ (list T)] (append $ zs)) <a1>))
+
+  (have <a3> (equal (append ys zs)
+                    (append (null T) (append ys zs)))
+        :by (eq/eq-sym (append-null-left (append ys zs))))
+
+  (have <a> (P (null T)) :by (eq/eq-trans <a2> <a3>))
+
+  "Inductive case"
+
+  (assume [xs (list T)
+           Hind (P xs)
+           x T]
+    "Now we have to prove (P (cons x xs))"
+    
+    (have <b1> (equal (append (cons x xs) ys)
+                      (cons x (append xs ys)))
+          :by (append-cons x xs ys))
+
+    (have <b2> (equal (append (append (cons x xs) ys) zs)
+                      (append (cons x (append xs ys)) zs))
+          :by (eq/eq-cong (lambda [$ (list T)] (append $ zs)) <b1>))
+
+    (have <b3> (equal (append (cons x (append xs ys)) zs)
+                      (cons x (append (append xs ys) zs)))
+          :by (append-cons x (append xs ys) zs))
+
+    (have <b4> (equal (append (append xs ys) zs)
+                      (append xs (append ys zs)))
+          :by Hind)
+
+    (have <b5> (equal (cons x (append (append xs ys) zs))
+                      (cons x (append xs (append ys zs))))
+          :by (eq/eq-cong (lambda [$ (list T)] (cons x $)) <b4>))
+
+    (have <b6> (equal (cons x (append xs (append ys zs)))
+                      (append (cons x xs) (append ys zs)))
+          :by (eq/eq-sym (append-cons x xs (append ys zs))))
+
+    (have <b> (P (cons x xs)) :by (eq/eq-trans* <b2> <b3> <b5> <b6>)))
+
+  (qed ((lists/list-induct P) <a> <b> xs)))
 
 
 
