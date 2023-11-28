@@ -18,7 +18,7 @@
   )
 
 (definition append-property
-  [[T :type] [ys (list T)]]
+  [[?T :type] [ys (list T)]]
   (lambda [g (==> (list T) (list T))]
     (and (equal (g (null T)) ys)
          (∀ [xs (list T)]
@@ -26,38 +26,41 @@
            (equal (g (cons x xs)) (cons x (g xs))))))))
 
 (defthm append-unique
-  [[T :type] [ys (list T)]]
-  (q/unique (append-property T ys)))
+  [[?T :type] [ys (list T)]]
+  (q/unique (append-property ys)))
 
-(proof 'append-unique
-  (qed (lists/list-recur T (list T) ys 
-                         (lists/cons-ax T))))
+(proof 'append-unique-thm
+  (qed (lists/list-recur ys  (lists/cons-ax T))))
 
 (definition append-fun
-  [[T :type] [ys (list T)]]
-  (q/the (append-unique T ys)))
+  [[?T :type] [ys (list T)]]
+  (q/the (append-unique ys)))
 
 (definition append
   [[?T :type] [xs ys (list T)]]
-  ((append-fun T xs) ys))
+  ((append-fun xs) ys))
 
 (defthm append-prop
   [[?T :type] [ys (list T)]]
-  (and (equal ((append-fun T ys) (null T)) ys)
+  (and (equal ((append-fun ys) (null T)) ys)
        (forall [xs (list T)]
          (forall [x T]
-           (equal ((append-fun T ys) (cons x xs))
-                  (cons x ((append-fun T ys) xs)))))))
+           (equal ((append-fun ys) (cons x xs))
+                  (cons x ((append-fun ys) xs)))))))
 
 (proof 'append-prop-thm
-  (qed (q/the-prop (append-unique T ys))))
+  (qed (q/the-prop (append-unique ys))))
 
 (defthm append-null
   [[?T :type] [xs (list T)]]
-  (equal (append-def T xs (null T)) xs))
+  (equal (append xs (null T)) xs))
 
 (proof 'append-null-thm
-  (qed (p/and-elim-left (append-prop-thm T xs))))
+  (qed (p/and-elim-left (append-prop xs))))
+
+
+
+
 
 
 
